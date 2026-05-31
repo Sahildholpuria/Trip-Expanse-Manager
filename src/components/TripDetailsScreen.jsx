@@ -633,6 +633,7 @@ export default function TripDetailsScreen({ trip, onBack }) {
                   </span>
                   <input
                     type="number"
+                    inputmode="decimal"
                     ref={amountInputRef}
                     required
                     placeholder="0"
