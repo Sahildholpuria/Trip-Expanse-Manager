@@ -11,12 +11,12 @@ import {
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  projectId: "settel-now",
-  appId: "1:853045893831:web:98d1976c787d1f5acdbce2",
-  storageBucket: "settel-now.firebasestorage.app",
-  apiKey: "AIzaSyBh1KKZ2N2q0oQajDu9cGbIbhBYUp15aO0",
-  authDomain: "settel-now.firebaseapp.com",
-  messagingSenderId: "853045893831"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 // Initialize Firebase
