@@ -21,7 +21,8 @@ import {
   ArrowRight,
   TrendingUp,
   User,
-  Activity
+  Activity,
+  AlertCircle
 } from 'lucide-react';
 
 export default function DashboardScreen({ user, onSelectTrip }) {
