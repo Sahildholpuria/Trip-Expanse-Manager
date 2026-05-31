@@ -46,6 +46,12 @@ export default function TripDetailsScreen({ trip, onBack }) {
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('expenses'); // 'expenses' | 'balances' | 'participants'
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
   
   // Add Expense Drawer State
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -148,6 +154,7 @@ export default function TripDetailsScreen({ trip, onBack }) {
 
       await addDoc(collection(db, 'expenses'), expenseData);
       setIsDrawerOpen(false);
+      showToast("Expense added successfully!");
     } catch (err) {
       console.error(err);
       setError('Failed to add expense: ' + err.message);
@@ -160,8 +167,10 @@ export default function TripDetailsScreen({ trip, onBack }) {
     if (window.confirm("Are you sure you want to delete this expense?")) {
       try {
         await deleteDoc(doc(db, 'expenses', id));
+        showToast("Expense deleted successfully!");
       } catch (err) {
         console.error("Error deleting expense:", err);
+        showToast("Failed to delete expense: " + err.message, "error");
       }
     }
   };
@@ -180,10 +189,10 @@ export default function TripDetailsScreen({ trip, onBack }) {
       };
 
       await addDoc(collection(db, 'expenses'), settlementExpense);
-      alert(`Settled ₹${amountToSettle} from ${from} to ${to}!`);
+      showToast(`Settled ₹${amountToSettle} from ${from} to ${to}!`);
     } catch (err) {
       console.error("Error settling up:", err);
-      alert("Failed to record settlement: " + err.message);
+      showToast("Failed to record settlement: " + err.message, "error");
     }
   };
 
@@ -193,6 +202,20 @@ export default function TripDetailsScreen({ trip, onBack }) {
     .reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
   const balances = calculateBalances(trip.participants, expenses);
   const simplifiedDebts = simplifyDebts(balances);
+
+  // Calculate category distribution (excluding Settlement)
+  const catDistribution = CATEGORIES.reduce((acc, cat) => {
+    if (cat.id === 'Settlement') return acc;
+    const total = expenses
+      .filter(exp => exp.category === cat.id)
+      .reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
+    if (total > 0) {
+      acc.push({ ...cat, total });
+    }
+    return acc;
+  }, []);
+
+  const totalActiveSpent = catDistribution.reduce((sum, item) => sum + item.total, 0);
 
   const toggleSplitUser = (name) => {
     if (splitAmong.includes(name)) {
@@ -273,6 +296,59 @@ export default function TripDetailsScreen({ trip, onBack }) {
               </p>
             </div>
           </div>
+
+          {/* Expense Breakdown Visual Bar */}
+          {totalActiveSpent > 0 && (
+            <div className="mt-5 pt-5 border-t border-slate-200/50 dark:border-slate-800/80">
+              <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-2">
+                Expense Breakdown
+              </span>
+              <div className="h-2.5 w-full bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden flex">
+                {catDistribution.map((item) => {
+                  const pct = (item.total / totalActiveSpent) * 100;
+                  let bgClass = 'bg-slate-500';
+                  if (item.id === 'Food') bgClass = 'bg-amber-500';
+                  else if (item.id === 'Transport') bgClass = 'bg-blue-500';
+                  else if (item.id === 'Lodging') bgClass = 'bg-purple-500';
+                  else if (item.id === 'Activities') bgClass = 'bg-green-500';
+                  else if (item.id === 'Shopping') bgClass = 'bg-pink-500';
+                  else if (item.id === 'Other') bgClass = 'bg-slate-400';
+
+                  return (
+                    <div 
+                      key={item.id} 
+                      className={`${bgClass} transition-all`} 
+                      style={{ width: `${pct}%` }}
+                      title={`${item.label}: ${pct.toFixed(0)}%`}
+                    />
+                  );
+                })}
+              </div>
+
+              <div className="flex flex-wrap gap-x-4 gap-y-1.5 mt-3 text-xs text-slate-500 dark:text-slate-400">
+                {catDistribution.map((item) => {
+                  const pct = (item.total / totalActiveSpent) * 100;
+                  let dotColor = 'bg-slate-500';
+                  if (item.id === 'Food') dotColor = 'bg-amber-500';
+                  else if (item.id === 'Transport') dotColor = 'bg-blue-500';
+                  else if (item.id === 'Lodging') dotColor = 'bg-purple-500';
+                  else if (item.id === 'Activities') dotColor = 'bg-green-500';
+                  else if (item.id === 'Shopping') dotColor = 'bg-pink-500';
+                  else if (item.id === 'Other') dotColor = 'bg-slate-400';
+
+                  return (
+                    <div key={item.id} className="flex items-center gap-1.5">
+                      <span className={`w-2 h-2 rounded-full ${dotColor}`} />
+                      <span>{item.label}</span>
+                      <span className="font-semibold text-slate-700 dark:text-slate-300">
+                        {pct.toFixed(0)}%
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </section>
 
         {/* Action / Navigation Tabs */}
@@ -740,6 +816,18 @@ export default function TripDetailsScreen({ trip, onBack }) {
               </button>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className={`fixed bottom-24 left-1/2 -translate-x-1/2 z-50 py-3 px-5 rounded-2xl shadow-xl flex items-center gap-2.5 animate-fade-in text-sm font-semibold border ${
+          toast.type === 'error'
+            ? 'bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-450'
+            : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-450'
+        }`}>
+          {toast.type === 'error' ? <AlertCircle className="w-4.5 h-4.5 shrink-0 text-rose-500" /> : <CheckCircle className="w-4.5 h-4.5 shrink-0 text-emerald-500" />}
+          <span>{toast.message}</span>
         </div>
       )}
     </div>

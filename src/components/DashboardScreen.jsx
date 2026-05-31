@@ -22,12 +22,19 @@ import {
   TrendingUp,
   User,
   Activity,
-  AlertCircle
+  AlertCircle,
+  CheckCircle
 } from 'lucide-react';
 
 export default function DashboardScreen({ user, onSelectTrip }) {
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
   
   // Drawer / New Trip Form State
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -83,9 +90,10 @@ export default function DashboardScreen({ user, onSelectTrip }) {
           deletePromises.push(deleteDoc(doc(db, 'expenses', docSnap.id)));
         });
         await Promise.all(deletePromises);
+        showToast("Trip deleted successfully!");
       } catch (err) {
         console.error("Error deleting trip and expenses:", err);
-        alert("Failed to delete trip: " + err.message);
+        showToast("Failed to delete trip: " + err.message, "error");
       }
     }
   };
@@ -136,6 +144,7 @@ export default function DashboardScreen({ user, onSelectTrip }) {
       };
 
       await addDoc(collection(db, 'trips'), tripData);
+      showToast("Trip created successfully!");
       
       // Reset form
       setTripName('');
@@ -441,6 +450,18 @@ export default function DashboardScreen({ user, onSelectTrip }) {
               </button>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className={`fixed bottom-24 left-1/2 -translate-x-1/2 z-50 py-3 px-5 rounded-2xl shadow-xl flex items-center gap-2.5 animate-fade-in text-sm font-semibold border ${
+          toast.type === 'error'
+            ? 'bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-450'
+            : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-450'
+        }`}>
+          {toast.type === 'error' ? <AlertCircle className="w-4.5 h-4.5 shrink-0 text-rose-500" /> : <CheckCircle className="w-4.5 h-4.5 shrink-0 text-emerald-500" />}
+          <span>{toast.message}</span>
         </div>
       )}
     </div>
