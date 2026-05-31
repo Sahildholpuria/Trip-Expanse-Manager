@@ -269,7 +269,7 @@ export default function DashboardScreen({ user, onSelectTrip }) {
                   </div>
                   <button
                     onClick={(e) => handleDeleteTrip(e, trip.id)}
-                    className="p-2 hover:bg-rose-500/10 hover:text-rose-500 rounded-xl text-slate-400 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                    className="p-2 hover:bg-rose-500/10 hover:text-rose-500 rounded-xl text-slate-400 transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100"
                     title="Delete Trip"
                   >
                     <Trash className="w-4.5 h-4.5" />

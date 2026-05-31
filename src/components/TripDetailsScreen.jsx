@@ -279,35 +279,35 @@ export default function TripDetailsScreen({ trip, onBack }) {
         <nav className="flex bg-slate-100 dark:bg-slate-950 p-1 rounded-2xl mb-6 relative z-10">
           <button
             onClick={() => setActiveTab('expenses')}
-            className={`flex-1 py-3 px-4 font-semibold text-sm rounded-xl transition-all flex items-center justify-center gap-2 ${
+            className={`flex-1 py-2.5 px-2 sm:px-4 font-semibold text-xs sm:text-sm rounded-xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 ${
               activeTab === 'expenses' 
                 ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm' 
                 : 'text-slate-500 hover:text-slate-850 dark:hover:text-slate-200'
             }`}
           >
-            <Layers className="w-4 h-4" />
+            <Layers className="w-4 h-4 shrink-0" />
             <span>Expenses</span>
           </button>
           <button
             onClick={() => setActiveTab('balances')}
-            className={`flex-1 py-3 px-4 font-semibold text-sm rounded-xl transition-all flex items-center justify-center gap-2 ${
+            className={`flex-1 py-2.5 px-2 sm:px-4 font-semibold text-xs sm:text-sm rounded-xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 ${
               activeTab === 'balances' 
                 ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm' 
                 : 'text-slate-500 hover:text-slate-850 dark:hover:text-slate-200'
             }`}
           >
-            <UserCheck className="w-4 h-4" />
+            <UserCheck className="w-4 h-4 shrink-0" />
             <span>Balances</span>
           </button>
           <button
             onClick={() => setActiveTab('participants')}
-            className={`flex-1 py-3 px-4 font-semibold text-sm rounded-xl transition-all flex items-center justify-center gap-2 ${
+            className={`flex-1 py-2.5 px-2 sm:px-4 font-semibold text-xs sm:text-sm rounded-xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 ${
               activeTab === 'participants' 
                 ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm' 
                 : 'text-slate-500 hover:text-slate-850 dark:hover:text-slate-200'
             }`}
           >
-            <Users className="w-4 h-4" />
+            <Users className="w-4 h-4 shrink-0" />
             <span>Travelers</span>
           </button>
         </nav>
@@ -390,7 +390,7 @@ export default function TripDetailsScreen({ trip, onBack }) {
                             </span>
                             <button
                               onClick={() => handleDeleteExpense(expense.id)}
-                              className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-rose-500 rounded-lg opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-rose-500 rounded-lg opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 transition-opacity"
                               title="Delete Expense"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -453,9 +453,9 @@ export default function TripDetailsScreen({ trip, onBack }) {
                       {simplifiedDebts.map((debt, index) => (
                         <div 
                           key={index}
-                          className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-sm gap-3"
+                          className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-sm gap-3"
                         >
-                          <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                          <div className="text-sm font-medium text-slate-700 dark:text-slate-300 min-w-0 flex-1">
                             <span className="font-bold text-rose-500">{debt.from}</span> owes{' '}
                             <span className="font-bold text-emerald-500">{debt.to}</span>{' '}
                             <span className="font-display font-extrabold text-base text-slate-850 dark:text-white block mt-0.5">
@@ -465,7 +465,7 @@ export default function TripDetailsScreen({ trip, onBack }) {
 
                           <button
                             onClick={() => handleSettleUp(debt.from, debt.to, debt.amount)}
-                            className="py-2 px-4 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-500/15 transition-all active:scale-[0.97] self-end sm:self-center"
+                            className="py-2 px-4 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-500/15 transition-all active:scale-[0.97] shrink-0"
                           >
                             Settle Up
                           </button>
@@ -589,7 +589,7 @@ export default function TripDetailsScreen({ trip, onBack }) {
                 <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
                   Category
                 </label>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   {CATEGORIES.filter(c => c.id !== 'Settlement').map((cat) => {
                     const CatIcon = cat.icon;
                     const isSelected = category === cat.id;
